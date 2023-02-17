@@ -1,4 +1,6 @@
 package com.nima.openbooksdownloader.navigation
 
-interface Screens {
+enum class Screens {
+
+    HomeScreen,
 }
