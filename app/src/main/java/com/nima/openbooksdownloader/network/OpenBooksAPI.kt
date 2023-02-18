@@ -19,7 +19,7 @@ interface OpenBooksAPI {
     suspend fun getSearchResult(@Path("query") query: String): SearchResult
 
     @GET("book/{id}")
-    suspend fun getBook(@Path("id") id: Long): Book
+    suspend fun getBook(@Path("id") id: String): Book
 
     @Streaming
     @GET

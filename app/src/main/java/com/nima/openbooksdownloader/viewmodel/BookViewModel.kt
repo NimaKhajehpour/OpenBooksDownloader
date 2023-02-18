@@ -14,7 +14,7 @@ import javax.inject.Inject
 class BookViewModel @Inject constructor(private val repository: OpenBookRepository)
     :ViewModel(){
 
-    suspend fun getBook(id: Long) = repository.getBook(id)
+    suspend fun getBook(id: String) = repository.getBook(id)
 
     suspend fun downloadBook(url: String, destination: String) =
         viewModelScope.produce<Flow<DownloadState>> {

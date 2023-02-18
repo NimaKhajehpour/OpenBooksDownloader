@@ -19,7 +19,7 @@ class OpenBookRepository @Inject constructor(private val api: OpenBooksAPI) {
         return flow{
             emit(DownloadState.Downloading(0))
             val destinationFile =
-                File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
+                File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
                     "$destination.pdf")
 
             try{
@@ -51,5 +51,5 @@ class OpenBookRepository @Inject constructor(private val api: OpenBooksAPI) {
 
     suspend fun getSearchResult(query: String) = api.getSearchResult(query)
 
-    suspend fun getBook(id: Long) = api.getBook(id)
+    suspend fun getBook(id: String) = api.getBook(id)
 }
