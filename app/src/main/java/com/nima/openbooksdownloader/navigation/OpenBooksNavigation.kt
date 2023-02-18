@@ -2,9 +2,12 @@ package com.nima.openbooksdownloader.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.nima.openbooksdownloader.screens.BookScreen
 import com.nima.openbooksdownloader.screens.HomeScreen
 
 @Composable
@@ -16,6 +19,15 @@ fun OpenBooksNavigation (){
 
         composable(Screens.HomeScreen.name){
             HomeScreen(navController = navController, viewModel = hiltViewModel())
+        }
+
+        composable(Screens.BookScreen.name+"/{id}",
+            arguments = listOf(
+                navArgument(name = "id"){type = NavType.StringType}
+            )
+        ){
+            BookScreen(navController = navController, viewModel = hiltViewModel(),
+                id = it.arguments?.getString("id"))
         }
     }
 }

@@ -54,9 +54,7 @@ fun RecentBooksItem(
                 }
             )
         }
-        ElevatedCard(onClick = {
-            onClick(book.id)
-        },
+        ElevatedCard(
             modifier = Modifier
                 .weight(1f)
                 .padding(start = 6.dp, top = 3.dp, bottom = 3.dp),
@@ -82,8 +80,21 @@ fun RecentBooksItem(
                 style = MaterialTheme.typography.labelSmall,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 5.dp, bottom = 8.dp, start = 10.dp, end = 10.dp)
+                    .padding(top = 5.dp, bottom = 5.dp, start = 10.dp, end = 10.dp)
             )
+            
+            Button(onClick = {
+                onClick(book.id)
+            },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp, bottom = 8.dp, start = 10.dp, end = 10.dp),
+                shape = RoundedCornerShape(10.dp)
+            ) {
+                Text(text = "See Details",
+                    style = MaterialTheme.typography.labelMedium
+                )
+            }
         }
     }
 }

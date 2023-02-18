@@ -1,5 +1,9 @@
 package com.nima.openbooksdownloader.repository
 
+import android.net.Uri
+import android.os.Environment
+import android.util.Log
+import androidx.compose.ui.platform.LocalContext
 import com.nima.openbooksdownloader.network.OpenBooksAPI
 import com.nima.openbooksdownloader.utils.DownloadState
 import kotlinx.coroutines.Dispatchers
@@ -14,7 +18,9 @@ class OpenBookRepository @Inject constructor(private val api: OpenBooksAPI) {
     private fun ResponseBody.saveFile(destination: String): Flow<DownloadState>{
         return flow{
             emit(DownloadState.Downloading(0))
-            val destinationFile = File(destination)
+            val destinationFile =
+                File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
+                    "$destination.pdf")
 
             try{
                 byteStream().use { input ->
@@ -45,5 +51,5 @@ class OpenBookRepository @Inject constructor(private val api: OpenBooksAPI) {
 
     suspend fun getSearchResult(query: String) = api.getSearchResult(query)
 
-    suspend fun getBook(id: Int) = api.getBook(id)
+    suspend fun getBook(id: Long) = api.getBook(id)
 }

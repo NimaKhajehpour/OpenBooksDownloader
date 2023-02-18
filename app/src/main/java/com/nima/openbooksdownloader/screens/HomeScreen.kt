@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.nima.openbooksdownloader.components.RecentBooksItem
 import com.nima.openbooksdownloader.model.recent.RecentBooks
+import com.nima.openbooksdownloader.navigation.Screens
 import com.nima.openbooksdownloader.viewmodel.HomeViewModel
 
 @Composable
@@ -46,7 +47,7 @@ fun HomeScreen(
                 ) {
                     items(items = recentBooks.books) {
                         RecentBooksItem(book = it){ id ->
-
+                            navController.navigate(Screens.BookScreen.name+"/$id")
                         }
                     }
                 }
