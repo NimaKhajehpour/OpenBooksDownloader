@@ -1,9 +1,12 @@
 package com.nima.openbooksdownloader.screens
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Environment
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -21,10 +24,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
+import com.nima.openbooksdownloader.BuildConfig
 import com.nima.openbooksdownloader.R
 import com.nima.openbooksdownloader.model.book.Book
 import com.nima.openbooksdownloader.utils.DownloadState
@@ -179,40 +185,59 @@ fun BookScreen (
                 }
 
                 if (!downloading){
-                    IconButton(
-                        onClick = {
-                            when (PackageManager.PERMISSION_GRANTED) {
-                                ContextCompat.checkSelfPermission(
-                                    context,
-                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                                )
-                                    .and(
-                                        ContextCompat.checkSelfPermission(
-                                            context,
-                                            Manifest.permission.READ_EXTERNAL_STORAGE
-                                        )
-                                    ) -> {
-                                    destination = book.title
-                                }
-                                else -> {
-                                    permissionLauncher.launch(
-                                        arrayOf(
-                                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                            Manifest.permission.READ_EXTERNAL_STORAGE,
-                                        )
-                                    )
-                                }
-                            }
-                        },
-                        enabled = !File(
+                    if (!File(
                             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                            "$destination.pdf"
-                        ).isFile
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_baseline_download_24),
-                            contentDescription = null
-                        )
+                            "${book.title}.pdf"
+                        ).isFile){
+                        IconButton(
+                            onClick = {
+                                when (PackageManager.PERMISSION_GRANTED) {
+                                    ContextCompat.checkSelfPermission(
+                                        context,
+                                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                    )
+                                        .and(
+                                            ContextCompat.checkSelfPermission(
+                                                context,
+                                                Manifest.permission.READ_EXTERNAL_STORAGE
+                                            )
+                                        ) -> {
+                                        destination = book.title
+                                    }
+                                    else -> {
+                                        permissionLauncher.launch(
+                                            arrayOf(
+                                                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                                Manifest.permission.READ_EXTERNAL_STORAGE,
+                                            )
+                                        )
+                                    }
+                                }
+                            },
+                            enabled = !File(
+                                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                                "${book.title}.pdf"
+                            ).isFile
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_baseline_download_24),
+                                contentDescription = null
+                            )
+                        }
+                    }else{
+                        Button(onClick = {
+                            val openPDF =
+                                Intent(Intent.ACTION_VIEW)
+                            openPDF.setDataAndType(
+                                FileProvider.getUriForFile(context, context.applicationContext.packageName+".provider", File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                                    "${book.title}.pdf")),
+                                "application/pdf"
+                            )
+                            openPDF.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            context.startActivity(Intent.createChooser(openPDF, "Open With..."))
+                        }) {
+                            Text(text = "Start Reading")
+                        }
                     }
                 }
                 IconButton(
