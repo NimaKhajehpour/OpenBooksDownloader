@@ -3,18 +3,21 @@ package com.nima.openbooksdownloader.screens
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Environment
+import android.text.Html
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,23 +25,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.core.net.toUri
+import androidx.core.text.toSpanned
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
-import coil.compose.SubcomposeAsyncImageContent
-import com.nima.openbooksdownloader.BuildConfig
 import com.nima.openbooksdownloader.R
+import com.nima.openbooksdownloader.components.PublisherBookItem
+import com.nima.openbooksdownloader.components.RecentBooksItem
 import com.nima.openbooksdownloader.model.book.Book
+import com.nima.openbooksdownloader.model.search.SearchResult
+import com.nima.openbooksdownloader.navigation.Screens
 import com.nima.openbooksdownloader.utils.DownloadState
 import com.nima.openbooksdownloader.viewmodel.BookViewModel
 import kotlinx.coroutines.launch
 import java.io.File
+import java.net.URL
+import java.net.URLEncoder
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BookScreen (
     navController: NavController,
@@ -47,7 +54,7 @@ fun BookScreen (
 ){
 
     val book = produceState<Book?>(initialValue = null){
-        value = viewModel.getBook(id!!)
+        value = viewModel.getBook(id!!.toLowerCase())
     }.value
 
     var destination by remember{
@@ -102,16 +109,27 @@ fun BookScreen (
 
     val context = LocalContext.current
 
+    BackHandler(true) {
+        if (!downloading){
+            navController.popBackStack()
+        }else{
+            Toast.makeText(context, "Please wait for the download to finish!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
+            .fillMaxSize(),
+//            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (book == null){
             CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
-        }else{
+        }else if (book.status == "ok"){
+            val publisherBooks = produceState<SearchResult?>(initialValue = null){
+                value = viewModel.getPublisherBooks(URLEncoder.encode(Html.fromHtml(book.publisher).toString()))
+            }.value
 
             Row(
                 modifier = Modifier
@@ -150,7 +168,7 @@ fun BookScreen (
                     )
 
                     Text(
-                        text = "Publisher: ${book.publisher}",
+                        text = "Publisher: ${Html.fromHtml(book.publisher)}",
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Light
                     )
@@ -249,6 +267,43 @@ fun BookScreen (
                         contentDescription = null)
                 }
 
+            }
+
+            if (publisherBooks != null && publisherBooks.status == "ok"){
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
+
+                    stickyHeader {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(color = MaterialTheme.colorScheme.surface),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(text = "Recommended Books",
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
+                        }
+                    }
+
+                    items(items = publisherBooks.books){
+                        if (it.id != book.id){
+                            PublisherBookItem(book = it){ id ->
+                                if (!downloading){
+                                    navController.navigate(Screens.BookScreen.name+"/$id")
+                                }else{
+                                    Toast.makeText(context,
+                                        "Please wait for the download to finish!", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
         }

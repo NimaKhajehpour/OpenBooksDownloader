@@ -20,4 +20,7 @@ class BookViewModel @Inject constructor(private val repository: OpenBookReposito
         viewModelScope.produce<Flow<DownloadState>> {
             trySend(repository.downloadBook(url, destination))
         }
+
+    suspend fun getPublisherBooks(publisher: String) =
+        repository.getSearchResult(query = publisher)
 }
