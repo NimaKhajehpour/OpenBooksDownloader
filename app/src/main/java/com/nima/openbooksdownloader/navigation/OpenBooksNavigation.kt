@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.nima.openbooksdownloader.screens.BookScreen
 import com.nima.openbooksdownloader.screens.HomeScreen
+import com.nima.openbooksdownloader.screens.SearchScreen
 
 @Composable
 fun OpenBooksNavigation (){
@@ -28,6 +29,10 @@ fun OpenBooksNavigation (){
         ){
             BookScreen(navController = navController, viewModel = hiltViewModel(),
                 id = it.arguments?.getString("id"))
+        }
+
+        composable(Screens.SearchScreen.name){
+            SearchScreen(navController = navController, viewModel = hiltViewModel())
         }
     }
 }
