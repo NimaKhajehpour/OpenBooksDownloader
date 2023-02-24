@@ -78,4 +78,7 @@ class OpenBookRepository @Inject constructor
     suspend fun updateBook(book: Book) =
         dao.updateBook(book)
 
+    fun getSavedBooks(): Flow<List<Book>> =
+        dao.getSavedBooks().flowOn(Dispatchers.IO).conflate()
+
 }
