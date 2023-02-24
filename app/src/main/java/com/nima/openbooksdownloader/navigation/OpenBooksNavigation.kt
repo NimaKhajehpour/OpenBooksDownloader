@@ -7,9 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.nima.openbooksdownloader.screens.BookScreen
-import com.nima.openbooksdownloader.screens.HomeScreen
-import com.nima.openbooksdownloader.screens.SearchScreen
+import com.nima.openbooksdownloader.screens.*
 
 @Composable
 fun OpenBooksNavigation (){
@@ -33,6 +31,14 @@ fun OpenBooksNavigation (){
 
         composable(Screens.SearchScreen.name){
             SearchScreen(navController = navController, viewModel = hiltViewModel())
+        }
+
+        composable(Screens.TagsScreen.name){
+            TagsScreen(navController = navController, viewModel = hiltViewModel())
+        }
+
+        composable(Screens.BookmarkScreen.name){
+            BookmarkScreen(navController = navController, viewModel = hiltViewModel())
         }
     }
 }

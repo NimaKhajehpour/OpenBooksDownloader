@@ -6,14 +6,13 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.produceState
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -22,9 +21,11 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.nima.openbooksdownloader.R
 import com.nima.openbooksdownloader.components.RecentBooksItem
+import com.nima.openbooksdownloader.database.Tag
 import com.nima.openbooksdownloader.model.recent.RecentBooks
 import com.nima.openbooksdownloader.navigation.Screens
 import com.nima.openbooksdownloader.viewmodel.HomeViewModel
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -35,9 +36,19 @@ fun HomeScreen(
     viewModel: HomeViewModel
 ) {
 
+    val tags = viewModel.getAllTags().collectAsState(initial = emptyList()).value
+
     val recentBooks = produceState<RecentBooks?>(initialValue = null){
         value = viewModel.getRecentBooks()
     }.value
+
+    var showTagDialog by remember {
+        mutableStateOf(false)
+    }
+
+    var tagName by remember {
+        mutableStateOf("")
+    }
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
@@ -117,6 +128,7 @@ fun HomeScreen(
                             scope.launch {
                                 drawerState.close()
                             }
+                            navController.navigate(Screens.BookmarkScreen.name)
                         },
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
 
@@ -152,6 +164,7 @@ fun HomeScreen(
                             scope.launch {
                                 drawerState.close()
                             }
+                            navController.navigate(Screens.TagsScreen.name)
                         },
                         badge = {
                             IconButton(onClick = {
@@ -159,12 +172,29 @@ fun HomeScreen(
                                 scope.launch {
                                     drawerState.close()
                                 }
+                                showTagDialog = true
                             }) {
                                 Icon(imageVector = Icons.Default.Add, contentDescription = null)
                             }
                         },
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
+
+                    if (tags.isNotEmpty()){
+                        tags.forEach {
+                            NavigationDrawerItem(label = {
+                                Text(text = it.name)
+                            }, selected = false,
+                                onClick = {
+                                    // go to tag name
+                                    scope.launch {
+                                        drawerState.close()
+                                    }
+                                },
+                                modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                            )
+                        }
+                    }
                 }
             }
         },
@@ -190,6 +220,54 @@ fun HomeScreen(
                         Icon(imageVector = Icons.Default.Menu, contentDescription = null)
                     }
                 }
+
+                if (showTagDialog){
+                    AlertDialog(
+                        onDismissRequest = {
+                            showTagDialog = false
+                            tagName = ""
+                        },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    val tag = Tag(tagName.trim())
+                                    viewModel.addTag(tag)
+                                    tagName = ""
+                                    showTagDialog = false
+                                },
+                                enabled = tagName.isNotBlank() && tagName.trim().length <= 20
+                            ) {
+                                Text(text = "Add Tag")
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(
+                                onClick = {
+                                    showTagDialog = false
+                                    tagName = ""
+                                },
+                            ) {
+                                Text(text = "Cancel")
+                            }
+                        },
+                        title = {
+                            Text(text = "Add Tag")
+                        },
+                        text = {
+                            OutlinedTextField(value = tagName,
+                                onValueChange = {
+                                    tagName = it
+                                },
+                                singleLine = true,
+                                isError = tagName.trim().length > 20,
+                                supportingText = {
+                                    Text(text = "Tag can be up to 20 characters in length")
+                                }
+                            )
+                        },
+                    )
+                }
+
                 when (recentBooks) {
                     null -> {
                         CircularProgressIndicator(modifier = Modifier

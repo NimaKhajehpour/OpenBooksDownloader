@@ -4,5 +4,7 @@ enum class Screens {
 
     HomeScreen,
     BookScreen,
-    SearchScreen
+    SearchScreen,
+    TagsScreen,
+    BookmarkScreen
 }

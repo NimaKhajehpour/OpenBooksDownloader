@@ -57,6 +57,8 @@ fun BookScreen (
         value = viewModel.getBook(id!!.toLowerCase())
     }.value
 
+    val dbBook = viewModel.getBookById(id!!.toLowerCase()).collectAsState(initial = null).value
+
     var destination by remember{
         mutableStateOf("")
     }
@@ -96,6 +98,15 @@ fun BookScreen (
                             downloadFailed = true
                         }
                         is DownloadState.Finished -> {
+                            if (dbBook == null){
+                                val bookToAdd = com.nima.openbooksdownloader.database.Book(
+                                    id = id.toLowerCase(),
+                                    title = book.title,
+                                    note = "",
+                                    tag = ""
+                                )
+                                viewModel.addBook(bookToAdd)
+                            }
                             downloadFailed = false
                             downloading = false
                             downloaded = true
@@ -261,9 +272,30 @@ fun BookScreen (
                 IconButton(
                     onClick = {
                         // toggle saving book
+                              if (dbBook == null){
+                                  val bookToAdd = com.nima.openbooksdownloader.database.Book(
+                                      id = id.toLowerCase(),
+                                      title = book.title,
+                                      note = "",
+                                      tag = ""
+                                  )
+                                  viewModel.addBook(bookToAdd)
+                              }else{
+                                  viewModel.deleteBook(dbBook)
+                              }
                     },
+                    enabled = !File(
+                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                        "${book.title}.pdf"
+                    ).isFile
                 ) {
-                    Icon(painter = painterResource(id = R.drawable.ic_baseline_bookmark_border_24),
+                    Icon(painter = painterResource(id =
+                        if (dbBook == null){
+                            R.drawable.ic_baseline_bookmark_border_24
+                        }else{
+                            R.drawable.ic_baseline_bookmark_24
+                        }
+                    ),
                         contentDescription = null)
                 }
 
