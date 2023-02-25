@@ -40,5 +40,27 @@ fun OpenBooksNavigation (){
         composable(Screens.BookmarkScreen.name){
             BookmarkScreen(navController = navController, viewModel = hiltViewModel())
         }
+
+        composable(Screens.SavedBookScreen.name+"/{id}",
+            arguments = listOf(
+                navArgument(name = "id"){type = NavType.StringType}
+            )
+        ){
+            SavedBookScreen(navController = navController, viewModel = hiltViewModel(),
+                id = it.arguments?.getString("id"))
+        }
+
+        composable(Screens.DownloadsScreen.name){
+            DownloadsScreen(navController = navController, viewModel = hiltViewModel())
+        }
+
+        composable(Screens.TagScreen.name+"/{tag}",
+            arguments = listOf(
+                navArgument(name = "tag"){type = NavType.StringType}
+            )
+        ){
+            TagScreen(navController = navController, viewModel = hiltViewModel(),
+                tag = it.arguments?.getString("tag"))
+        }
     }
 }

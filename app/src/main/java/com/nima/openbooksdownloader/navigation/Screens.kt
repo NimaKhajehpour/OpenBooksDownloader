@@ -6,5 +6,8 @@ enum class Screens {
     BookScreen,
     SearchScreen,
     TagsScreen,
-    BookmarkScreen
+    BookmarkScreen,
+    SavedBookScreen,
+    DownloadsScreen,
+    TagScreen
 }

@@ -2,12 +2,18 @@ package com.nima.openbooksdownloader.screens
 
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.animateRectAsState
+import androidx.compose.animation.core.animateValueAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -15,6 +21,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
@@ -29,7 +36,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun HomeScreen(
     navController: NavController,
@@ -108,6 +115,7 @@ fun HomeScreen(
                             scope.launch {
                                 drawerState.close()
                             }
+                            navController.navigate(Screens.DownloadsScreen.name)
                         },
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
 
@@ -190,6 +198,7 @@ fun HomeScreen(
                                     scope.launch {
                                         drawerState.close()
                                     }
+                                    navController.navigate(Screens.TagScreen.name+"/${it.name}")
                                 },
                                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                             )
@@ -199,27 +208,10 @@ fun HomeScreen(
             }
         },
         content = {
-            Column(
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth(),
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxSize(),
             ){
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    IconButton(onClick = {
-                        scope.launch {
-                            drawerState.open()
-                        }
-                    }) {
-                        Icon(imageVector = Icons.Default.Menu, contentDescription = null)
-                    }
-                }
 
                 if (showTagDialog){
                     AlertDialog(
@@ -272,7 +264,8 @@ fun HomeScreen(
                     null -> {
                         CircularProgressIndicator(modifier = Modifier
                             .padding(top = 32.dp)
-                            .size(32.dp))
+                            .size(32.dp)
+                            .align(Alignment.TopCenter))
                     }
                     else -> {
                         LazyColumn(
@@ -287,6 +280,19 @@ fun HomeScreen(
                             }
                         }
                     }
+                }
+                SmallFloatingActionButton(onClick = {
+                    scope.launch {
+                        drawerState.open()
+                    }
+                },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(bottom = 16.dp, end = 8.dp),
+                    shape = if (drawerState.isOpen) CircleShape else RoundedCornerShape(5.dp)
+                ) {
+                    Icon(imageVector = if (drawerState.isOpen) Icons.Default.Close else Icons.Default.Menu,
+                        contentDescription = null)
                 }
             }
         }

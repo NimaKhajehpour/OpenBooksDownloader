@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nima.openbooksdownloader.components.TagItem
 import com.nima.openbooksdownloader.database.Tag
+import com.nima.openbooksdownloader.navigation.Screens
 import com.nima.openbooksdownloader.viewmodel.TagsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -131,6 +132,7 @@ fun TagsScreen(
             items(items = allTags){
                 TagItem(tag = it, onClick = {
                     // go to tag
+                    navController.navigate(Screens.TagScreen.name+"/${it.name}")
                 })
             }
         }

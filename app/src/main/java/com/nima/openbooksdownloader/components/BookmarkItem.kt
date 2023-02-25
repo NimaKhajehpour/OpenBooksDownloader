@@ -1,5 +1,6 @@
 package com.nima.openbooksdownloader.components
 
+import android.os.Environment
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -14,10 +15,12 @@ import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import com.nima.openbooksdownloader.database.Book
 import com.nima.openbooksdownloader.utils.Constants
+import java.io.File
 
 @Composable
 fun BookmarkItem(
     book: Book,
+    onOpen: () -> Unit,
     onClick: () -> Unit
 ) {
     Row(
@@ -30,7 +33,8 @@ fun BookmarkItem(
         Card(
             shape = RoundedCornerShape(5.dp),
             elevation = CardDefaults.cardElevation(10.dp),
-            modifier = Modifier.padding(3.dp)
+            modifier = Modifier
+                .padding(3.dp)
                 .size(90.dp, 110.dp)
         ) {
             SubcomposeAsyncImage(model = Constants.imageBaseUrl+"${book.id}.jpg",
@@ -71,17 +75,44 @@ fun BookmarkItem(
                     .fillMaxWidth()
                     .padding(top = 8.dp, bottom = 5.dp, start = 10.dp, end = 10.dp)
             )
-            Button(onClick = {
-                onClick()
-            },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp, bottom = 8.dp, start = 10.dp, end = 10.dp),
-                shape = RoundedCornerShape(10.dp)
-            ) {
-                Text(text = "See Details",
-                    style = MaterialTheme.typography.labelMedium
-                )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ){
+                Button(
+                    onClick = {
+                        onClick()
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(top = 8.dp, bottom = 8.dp, start = 5.dp, end = 5.dp),
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    Text(
+                        text = "Details",
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                }
+
+                if (File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                        "${book.title}.pdf"
+                    ).isFile){
+                    Button(
+                        onClick = {
+                            onOpen()
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(top = 8.dp, bottom = 8.dp, start = 5.dp, end = 5.dp),
+                        shape = RoundedCornerShape(10.dp)
+                    ) {
+                        Text(
+                            text = "Read",
+                            style = MaterialTheme.typography.labelMedium,
+                        )
+                    }
+                }
             }
         }
     }
