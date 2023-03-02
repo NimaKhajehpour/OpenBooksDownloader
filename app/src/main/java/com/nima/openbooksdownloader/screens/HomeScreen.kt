@@ -102,7 +102,10 @@ fun HomeScreen(
                                 drawerState.close()
                             }
                         },
-                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                        colors = NavigationDrawerItemDefaults.colors(
+                            unselectedIconColor = MaterialTheme.colorScheme.tertiary
+                        ),
                     )
 
                     NavigationDrawerItem(
@@ -123,8 +126,10 @@ fun HomeScreen(
                             }
                             navController.navigate(Screens.DownloadsScreen.name)
                         },
-                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                        colors = NavigationDrawerItemDefaults.colors(
+                            unselectedIconColor = MaterialTheme.colorScheme.tertiary
+                        ),
                     )
                     NavigationDrawerItem(
                         label = {
@@ -145,7 +150,9 @@ fun HomeScreen(
                             navController.navigate(Screens.BookmarkScreen.name)
                         },
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
-
+                        colors = NavigationDrawerItemDefaults.colors(
+                            unselectedIconColor = MaterialTheme.colorScheme.tertiary
+                        ),
                         )
                     NavigationDrawerItem(
                         label = {
@@ -165,8 +172,10 @@ fun HomeScreen(
                                 drawerState.close()
                             }
                         },
-                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                        colors = NavigationDrawerItemDefaults.colors(
+                            unselectedIconColor = MaterialTheme.colorScheme.tertiary
+                        ),
                     )
                     NavigationDrawerItem(
                         label = {
@@ -187,10 +196,14 @@ fun HomeScreen(
                                 drawerState.close()
                             }
                         },
-                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                        colors = NavigationDrawerItemDefaults.colors(
+                            unselectedBadgeColor = MaterialTheme.colorScheme.tertiary
+                        ),
                     )
-                    Divider(modifier = Modifier.padding(16.dp))
+                    Divider(modifier = Modifier.padding(16.dp),
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
 
                     NavigationDrawerItem(label = {
                         Text(text = "Tags")
@@ -209,10 +222,14 @@ fun HomeScreen(
                                     drawerState.close()
                                 }
                                 showTagDialog = true
-                            }) {
+                            },
+                            ) {
                                 Icon(imageVector = Icons.Default.Add, contentDescription = null)
                             }
                         },
+                        colors = NavigationDrawerItemDefaults.colors(
+                            unselectedBadgeColor = MaterialTheme.colorScheme.tertiary
+                        ),
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
 
@@ -228,7 +245,10 @@ fun HomeScreen(
                                     }
                                     navController.navigate(Screens.TagScreen.name+"/${it.name}")
                                 },
-                                modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                                modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                                colors = NavigationDrawerItemDefaults.colors(
+                                    unselectedTextColor = MaterialTheme.colorScheme.onTertiaryContainer
+                                )
                             )
                         }
                     }
@@ -255,7 +275,10 @@ fun HomeScreen(
                                     tagName = ""
                                     showTagDialog = false
                                 },
-                                enabled = tagName.isNotBlank() && tagName.trim().length <= 20
+                                enabled = tagName.isNotBlank() && tagName.trim().length <= 20,
+                                colors = ButtonDefaults.textButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.tertiary
+                                )
                             ) {
                                 Text(text = "Add Tag")
                             }

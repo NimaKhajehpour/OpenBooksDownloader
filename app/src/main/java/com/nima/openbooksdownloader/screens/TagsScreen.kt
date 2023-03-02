@@ -58,7 +58,10 @@ fun TagsScreen(
                             tagName = ""
                             showAddTagDialog = false
                         },
-                        enabled = tagName.isNotBlank() && tagName.trim().length <= 20
+                        enabled = tagName.isNotBlank() && tagName.trim().length <= 20,
+                        colors = ButtonDefaults.textButtonColors(
+                            contentColor = MaterialTheme.colorScheme.tertiary
+                        )
                     ) {
                         Text(text = "Add Tag")
                     }

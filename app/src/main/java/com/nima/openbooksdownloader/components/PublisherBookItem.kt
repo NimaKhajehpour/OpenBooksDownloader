@@ -1,5 +1,6 @@
 package com.nima.openbooksdownloader.components
 
+import android.text.Html
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -60,14 +61,15 @@ fun PublisherBookItem(
             shape = RoundedCornerShape(10.dp),
             elevation = CardDefaults.elevatedCardElevation(10.dp)
         ) {
-            Text(text = book.title,
+            Text(text = Html.fromHtml(book.title).toString(),
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.labelLarge,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 8.dp, bottom = 5.dp, start = 10.dp, end = 10.dp)
+                    .padding(top = 8.dp, bottom = 5.dp, start = 10.dp, end = 10.dp),
+                color = MaterialTheme.colorScheme.tertiary
             )
-            Text(text = book.subtitle,
+            Text(text = Html.fromHtml(book.subtitle).toString(),
                 fontWeight = FontWeight.SemiBold,
                 style = MaterialTheme.typography.labelMedium,
                 modifier = Modifier

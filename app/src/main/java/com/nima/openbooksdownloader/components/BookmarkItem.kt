@@ -1,6 +1,7 @@
 package com.nima.openbooksdownloader.components
 
 import android.os.Environment
+import android.text.Html
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -68,7 +69,7 @@ fun BookmarkItem(
             shape = RoundedCornerShape(10.dp),
             elevation = CardDefaults.elevatedCardElevation(10.dp)
         ) {
-            Text(text = book.title,
+            Text(text = Html.fromHtml(book.title).toString(),
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.labelLarge,
                 modifier = Modifier

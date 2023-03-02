@@ -164,12 +164,13 @@ fun BookScreen (
                     horizontalAlignment = Alignment.Start
                 ) {
                     Text(
-                        text = "Title: ${book.title}",
+                        text = "Title: ${Html.fromHtml(book.title)}",
                         style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.tertiary
                     )
                     Text(
-                        text = book.subtitle,
+                        text = Html.fromHtml(book.subtitle).toString(),
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.Normal
                     )
