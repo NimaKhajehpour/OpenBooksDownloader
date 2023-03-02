@@ -5,6 +5,32 @@ plugins {
     id 'kotlin-kapt'
 }
 
+//profgen on gradle
+import com.android.tools.profgen.ArtProfileKt
+import com.android.tools.profgen.ArtProfileSerializer
+import com.android.tools.profgen.DexFile
+
+project.afterEvaluate {
+    tasks.compileReleaseArtProfile.doLast {
+        outputs.files.each { file ->
+            if (file.toString().endsWith(".profm")) {
+                println("Sorting ${file} ...")
+                def version = ArtProfileSerializer.valueOf("METADATA_0_0_2")
+                def profile = ArtProfileKt.ArtProfile(file)
+                def keys = new ArrayList(profile.profileData.keySet())
+                def sortedData = new LinkedHashMap()
+                Collections.sort keys, new DexFile.Companion()
+                keys.each { key -> sortedData[key] = profile.profileData[key] }
+                new FileOutputStream(file).with {
+                    write(version.magicBytes$profgen)
+                    write(version.versionBytes$profgen)
+                    version.write$profgen(it, sortedData, "")
+                }
+            }
+        }
+    }
+}
+
 android {
     namespace 'com.nima.openbooksdownloader'
     compileSdk 33
@@ -24,6 +50,7 @@ android {
 
     buildTypes {
         release {
+            debuggable false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -50,13 +77,9 @@ android {
 
 dependencies {
 
-    //datastore
-    implementation "androidx.datastore:datastore-preferences:1.0.0"
-
     //Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.5.2"
 
     //ViewModel
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"

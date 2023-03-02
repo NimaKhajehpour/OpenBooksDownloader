@@ -1,0 +1,3 @@
+With this application you can save and download any open published book that is uploaded to dbooks.org.
+after downloading the book you can add your own tags and add as man books as you want to that tag to sort them properly.
+downloaded books will be saved inside the download directory in your phone and is accessible from that directory. Or you can open the book from the app with your favorite pdf reader.
