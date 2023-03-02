@@ -90,7 +90,7 @@ fun SavedBookScreen (
 
             Card(
                 modifier = Modifier
-                    .size(110.dp, 140.dp)
+                    .size(110.dp, 170.dp)
                     .padding(top = 16.dp),
                 shape = RoundedCornerShape(5.dp),
             ) {
@@ -103,6 +103,7 @@ fun SavedBookScreen (
             if (File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
                     "${savedBook.title}.pdf"
                 ).isFile){
+
                 Button(onClick = {
                     val openPDF =
                         Intent(Intent.ACTION_VIEW)
@@ -113,69 +114,44 @@ fun SavedBookScreen (
                     )
                     openPDF.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
                     context.startActivity(Intent.createChooser(openPDF, "Open With..."))
-                }) {
+                },
+                    modifier = Modifier.padding(vertical = 8.dp)
+                ) {
                     Text(text = "Start Reading")
                 }
             }
 
             OutlinedTextField(
-                value = savedBook.title,
-                onValueChange = {},
-                readOnly = true,
+                value = bookNote,
+                onValueChange = {
+                    bookNote = it
+                    viewModel.updateBook(savedBook.copy(note = bookNote.trim()))
+                },
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp, horizontal = 32.dp),
+                    .padding(horizontal = 60.dp, vertical = 8.dp),
                 label = {
-                    Text(text = "Title")
+                    Text(text = "Notes")
                 },
                 textStyle = MaterialTheme.typography.bodyLarge,
             )
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp, vertical = 8.dp),
-                verticalAlignment = Alignment.Top,
-                horizontalArrangement = Arrangement.Center
-            ){
-                OutlinedTextField(
-                    value = bookNote,
-                    onValueChange = {
-                        bookNote = it
-                    },
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(end = 4.dp),
-                    label = {
-                        Text(text = "Notes")
-                    },
-                    textStyle = MaterialTheme.typography.bodyLarge,
-                )
-
-                IconButton(onClick = {
-                    viewModel.updateBook(savedBook.copy(note = bookNote))
-                },
-                ) {
-                    Icon(imageVector = Icons.Default.Done, contentDescription = null)
-                }
-            }
-
             ExposedDropdownMenuBox(expanded = tagMenuExpanded,
                 onExpandedChange = { tagMenuExpanded = tagMenuExpanded.not() },
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp, vertical = 8.dp)
+                    .padding(vertical = 8.dp)
             ) {
-                TextField(
+                OutlinedTextField(
                     value = savedBook.tag.ifBlank { "None" },
                     modifier = Modifier.menuAnchor(),
                     readOnly = true,
                     onValueChange = {},
                     label = { Text("Tag") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = tagMenuExpanded) },
-                    colors = ExposedDropdownMenuDefaults.textFieldColors(),
+                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(
+
+                    ),
                 )
                 ExposedDropdownMenu(
                     expanded = tagMenuExpanded,

@@ -3,6 +3,7 @@ package com.nima.openbooksdownloader.screens
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Environment
 import android.text.Html
 import android.util.Log
@@ -254,6 +255,15 @@ fun BookScreen (
                             )
                         }
                     }else{
+                        if (dbBook == null){
+                            viewModel.addBook(com.nima.openbooksdownloader.database.Book(
+                                id = id,
+                                title = book.title,
+                                note = "",
+                                tag = ""
+                            ))
+                        }
+
                         Button(onClick = {
                             val openPDF =
                                 Intent(Intent.ACTION_VIEW)
@@ -299,6 +309,13 @@ fun BookScreen (
                         contentDescription = null)
                 }
 
+                IconButton(onClick = {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(book.url))
+                    context.startActivity(intent)
+                }) {
+                    Icon(painter = painterResource(id = R.drawable.ic_baseline_link_24),
+                        contentDescription = null)
+                }
             }
 
             if (publisherBooks != null && publisherBooks.status == "ok"){
