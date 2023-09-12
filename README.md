@@ -9,3 +9,5 @@ Users can also add notes for any saved book and see their thoughts on them.
      height="80">](https://f-droid.org/packages/com.nima.openbooksdownloader/)
 
 Or you can download the latest APK from the [Releases Section](https://github.com/NimaKhajehpour/OpenBooksDownloader/releases/latest).
+
+For easier communication with me (the developer) come hang out in my [telegram group](https://t.me/+bwYZeynt5JNkMDdk)
