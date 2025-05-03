@@ -7,40 +7,68 @@ import com.nima.openbooksdownloader.database.BookDatabase
 import com.nima.openbooksdownloader.network.OpenBooksAPI
 import com.nima.openbooksdownloader.repository.OpenBookRepository
 import com.nima.openbooksdownloader.utils.Constants
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
+import com.nima.openbooksdownloader.viewmodel.BookViewModel
+import com.nima.openbooksdownloader.viewmodel.BookmarkViewModel
+import com.nima.openbooksdownloader.viewmodel.DownloadsViewModel
+import com.nima.openbooksdownloader.viewmodel.HomeViewModel
+import com.nima.openbooksdownloader.viewmodel.SavedBookViewModel
+import com.nima.openbooksdownloader.viewmodel.SearchViewModel
+import com.nima.openbooksdownloader.viewmodel.TagViewModel
+import com.nima.openbooksdownloader.viewmodel.TagsViewModel
+import org.koin.android.ext.koin.androidApplication
+import org.koin.core.module.dsl.viewModel
+import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import javax.inject.Singleton
 
-@Module
-@InstallIn(SingletonComponent::class)
-object Modules {
 
-    @Provides
-    @Singleton
-    fun provideApi(): OpenBooksAPI = Retrofit.Builder().baseUrl(Constants.baseUrl).addConverterFactory(
-        GsonConverterFactory.create()
-    ).build().create(OpenBooksAPI::class.java)
+val module = module {
 
-    @Provides
-    @Singleton
-    fun provideRepository(api: OpenBooksAPI, dao: BookDao) = OpenBookRepository(api = api, dao = dao)
-
-    @Provides
-    @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): BookDatabase =
-        Room.databaseBuilder(context,
+    single {
+        Room.databaseBuilder(
+            androidApplication(),
             BookDatabase::class.java,
             "BookDatabase"
-        ).fallbackToDestructiveMigration().build()
+        ).fallbackToDestructiveMigration(false).build()
+    }
 
+    single {
+        val database = get<BookDatabase>()
+        database.dao()
+    }
 
-    @Provides
-    @Singleton
-    fun provideDao(database: BookDatabase): BookDao = database.dao()
+    single {
+        Retrofit.Builder().baseUrl(Constants.baseUrl).addConverterFactory(
+            GsonConverterFactory.create()
+        ).build().create(OpenBooksAPI::class.java)
+    }
 
+    single {
+        OpenBookRepository(get(), get())
+    }
+
+    viewModel {
+        BookmarkViewModel(get())
+    }
+    viewModel {
+        BookViewModel(get())
+    }
+    viewModel {
+        DownloadsViewModel(get())
+    }
+    viewModel {
+        HomeViewModel(get())
+    }
+    viewModel {
+        SavedBookViewModel(get())
+    }
+    viewModel {
+        SearchViewModel(get())
+    }
+    viewModel {
+        TagsViewModel(get())
+    }
+    viewModel {
+        TagViewModel(get())
+    }
 }

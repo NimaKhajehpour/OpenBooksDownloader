@@ -84,10 +84,10 @@ fun SearchScreen(
                     },
                     textStyle = MaterialTheme.typography.bodyMedium,
                     singleLine = true,
-                    colors = TextFieldDefaults.textFieldColors(
+                    colors = TextFieldDefaults.colors(
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
-                        containerColor = Color.Transparent
+                        focusedContainerColor = Color.Transparent
                     )
                 )
             }

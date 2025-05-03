@@ -14,9 +14,8 @@ import kotlinx.coroutines.flow.*
 import okhttp3.ResponseBody
 import retrofit2.Callback
 import java.io.File
-import javax.inject.Inject
 
-class OpenBookRepository @Inject constructor
+class OpenBookRepository
     (private val api: OpenBooksAPI, private val dao: BookDao) {
 
     private fun ResponseBody.saveFile(destination: String): Flow<DownloadState>{
@@ -63,7 +62,7 @@ class OpenBookRepository @Inject constructor
     fun getBookByTag(tag: String): Flow<List<Book>> =
         dao.getBookByTag(tag).flowOn(Dispatchers.IO).conflate()
 
-    fun getBookById(id: String): Flow<Book> =
+    fun getBookById(id: String): Flow<Book?> =
         dao.getBookById(id).flowOn(Dispatchers.IO).conflate()
 
     suspend fun addTag(tag: Tag) =

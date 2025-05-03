@@ -18,7 +18,7 @@ interface BookDao {
     fun getBookByTag(tag: String): Flow<List<Book>>
 
     @Query("select * from book where id =:id")
-    fun getBookById(id: String): Flow<Book>
+    fun getBookById(id: String): Flow<Book?>
 
     @Query("select * from book")
     fun getSavedBooks(): Flow<List<Book>>

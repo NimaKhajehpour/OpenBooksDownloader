@@ -6,16 +6,14 @@ import androidx.lifecycle.viewModelScope
 import com.nima.openbooksdownloader.database.Book
 import com.nima.openbooksdownloader.repository.OpenBookRepository
 import com.nima.openbooksdownloader.utils.DownloadState
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class BookViewModel @Inject constructor(private val repository: OpenBookRepository)
+
+class BookViewModel (private val repository: OpenBookRepository)
     :ViewModel(){
 
     suspend fun getBook(id: String) = repository.getBook(id)

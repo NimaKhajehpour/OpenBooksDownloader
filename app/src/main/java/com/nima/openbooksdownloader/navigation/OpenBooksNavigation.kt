@@ -1,13 +1,13 @@
 package com.nima.openbooksdownloader.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.nima.openbooksdownloader.screens.*
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun OpenBooksNavigation (){
@@ -17,7 +17,7 @@ fun OpenBooksNavigation (){
     NavHost(navController = navController, startDestination = Screens.HomeScreen.name){
 
         composable(Screens.HomeScreen.name){
-            HomeScreen(navController = navController, viewModel = hiltViewModel())
+            HomeScreen(navController = navController, viewModel = koinViewModel())
         }
 
         composable(Screens.BookScreen.name+"/{id}",
@@ -25,20 +25,20 @@ fun OpenBooksNavigation (){
                 navArgument(name = "id"){type = NavType.StringType}
             )
         ){
-            BookScreen(navController = navController, viewModel = hiltViewModel(),
+            BookScreen(navController = navController, viewModel = koinViewModel(),
                 id = it.arguments?.getString("id"))
         }
 
         composable(Screens.SearchScreen.name){
-            SearchScreen(navController = navController, viewModel = hiltViewModel())
+            SearchScreen(navController = navController, viewModel = koinViewModel())
         }
 
         composable(Screens.TagsScreen.name){
-            TagsScreen(navController = navController, viewModel = hiltViewModel())
+            TagsScreen(navController = navController, viewModel = koinViewModel())
         }
 
         composable(Screens.BookmarkScreen.name){
-            BookmarkScreen(navController = navController, viewModel = hiltViewModel())
+            BookmarkScreen(navController = navController, viewModel = koinViewModel())
         }
 
         composable(Screens.SavedBookScreen.name+"/{id}",
@@ -46,12 +46,12 @@ fun OpenBooksNavigation (){
                 navArgument(name = "id"){type = NavType.StringType}
             )
         ){
-            SavedBookScreen(navController = navController, viewModel = hiltViewModel(),
+            SavedBookScreen(navController = navController, viewModel = koinViewModel(),
                 id = it.arguments?.getString("id"))
         }
 
         composable(Screens.DownloadsScreen.name){
-            DownloadsScreen(navController = navController, viewModel = hiltViewModel())
+            DownloadsScreen(navController = navController, viewModel = koinViewModel())
         }
 
         composable(Screens.TagScreen.name+"/{tag}",
@@ -59,7 +59,7 @@ fun OpenBooksNavigation (){
                 navArgument(name = "tag"){type = NavType.StringType}
             )
         ){
-            TagScreen(navController = navController, viewModel = hiltViewModel(),
+            TagScreen(navController = navController, viewModel = koinViewModel(),
                 tag = it.arguments?.getString("tag"))
         }
     }

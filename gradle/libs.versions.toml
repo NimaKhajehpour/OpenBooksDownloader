@@ -1,0 +1,41 @@
+[versions]
+coroutine-core = "1.6.4"
+lifecyle = "2.8.7"
+navigation = "2.8.9"
+koin = "4.0.0"
+retrofit = "2.9.0"
+coil = "2.2.2"
+room = "2.7.1"
+core-ktx = "1.16.0"
+activity-compose = "1.10.1"
+compose = "1.8.0"
+material3 = "1.3.2"
+junit = "4.13.2"
+ext-junit = "1.1.4"
+espresso = "3.6.1"
+
+[libraries]
+retrofit = {group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit"}
+gson = {group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit"}
+coroutine-core = {group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutine-core"}
+coroutine-android = {group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutine-core"}
+lifecycle-viewmodel = {group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecyle"}
+lifecycle-runtime = {group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecyle"}
+navigation = {group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation"}
+koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
+koin-androidx-navigation = { group = "io.insert-koin", name = "koin-androidx-compose-navigation", version.ref = "koin" }
+coil = {group = "io.coil-kt", name = "coil-compose", version.ref = "coil"}
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
+activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
+compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "compose" }
+compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "compose" }
+compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "compose" }
+ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "compose" }
+ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest", version.ref = "compose" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "ext-junit" }
+espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
