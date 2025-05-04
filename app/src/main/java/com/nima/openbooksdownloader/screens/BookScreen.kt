@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.text.Html
 import android.util.Log
@@ -40,6 +41,7 @@ import com.nima.openbooksdownloader.model.book.Book
 import com.nima.openbooksdownloader.model.search.SearchResult
 import com.nima.openbooksdownloader.navigation.Screens
 import com.nima.openbooksdownloader.utils.DownloadState
+import com.nima.openbooksdownloader.utils.StoragePermissionHelper
 import com.nima.openbooksdownloader.viewmodel.BookViewModel
 import kotlinx.coroutines.launch
 import java.io.File
@@ -53,6 +55,8 @@ fun BookScreen (
     viewModel: BookViewModel,
     id: String?
 ){
+
+    val context = LocalContext.current
 
     val book = produceState<Book?>(initialValue = null){
         value = viewModel.getBook(id!!.toLowerCase())
@@ -82,44 +86,42 @@ fun BookScreen (
         mutableStateOf(false)
     }
 
-    LaunchedEffect(key1 = destination){
-        if (destination.isNotBlank()){
-            launch {
-                viewModel.downloadBook(book!!.download, destination).receive().collect{
-                    val state = when(it){
-                        is DownloadState.Downloading -> {
-                            downloaded = false
-                            downloadFailed = false
-                            downloading = true
-                            downloadProgress = it.progress
+    LaunchedEffect(destination) {
+        if (destination.isNotBlank()) {
+            viewModel.downloadBook(context, book!!.download, destination).collect { state ->
+                when (state) {
+                    is DownloadState.Downloading -> {
+                        downloaded = false
+                        downloadFailed = false
+                        downloading = true
+                        downloadProgress = state.progress
+                    }
+                    is DownloadState.Finished -> {
+                        if (dbBook == null){
+                            val bookToAdd = com.nima.openbooksdownloader.database.Book(
+                                id = id.toLowerCase(),
+                                title = book.title,
+                                note = "",
+                                tag = ""
+                            )
+                            viewModel.addBook(bookToAdd)
                         }
-                        is DownloadState.Failed -> {
-                            downloaded = false
-                            downloading = false
-                            downloadFailed = true
-                        }
-                        is DownloadState.Finished -> {
-                            if (dbBook == null){
-                                val bookToAdd = com.nima.openbooksdownloader.database.Book(
-                                    id = id.toLowerCase(),
-                                    title = book.title,
-                                    note = "",
-                                    tag = ""
-                                )
-                                viewModel.addBook(bookToAdd)
-                            }
-                            downloadFailed = false
-                            downloading = false
-                            downloaded = true
-                        }
+                        downloaded = true
+                        downloading = false
+                        downloadFailed = false
+                        // save to DB if needed
+                    }
+                    is DownloadState.Failed -> {
+                        downloaded = false
+                        downloading = false
+                        downloadFailed = true
                     }
                 }
-                destination = ""
             }
+            destination = ""
         }
     }
 
-    val context = LocalContext.current
 
     BackHandler(true) {
         if (!downloading){
@@ -223,56 +225,32 @@ fun BookScreen (
                     )
                 }
 
-                if (!downloading){
+                if (!downloading) {
                     if (!File(
                             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
                             "${book.title}.pdf"
                         ).isFile){
-                        IconButton(
-                            onClick = {
-                                when (PackageManager.PERMISSION_GRANTED) {
-                                    ContextCompat.checkSelfPermission(
-                                        context,
-                                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                                    )
-                                        .and(
-                                            ContextCompat.checkSelfPermission(
-                                                context,
-                                                Manifest.permission.READ_EXTERNAL_STORAGE
-                                            )
-                                        ) -> {
-                                        destination = book.title
-                                    }
-                                    else -> {
-                                        permissionLauncher.launch(
-                                            arrayOf(
-                                                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                                Manifest.permission.READ_EXTERNAL_STORAGE,
-                                            )
-                                        )
-                                    }
+                        if (!StoragePermissionHelper.hasPermissions(context)) {
+                            Button(onClick = {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                    StoragePermissionHelper.requestAllFilesAccess(context)
+                                } else {
+                                    permissionLauncher.launch(StoragePermissionHelper.permissionsForVersion())
                                 }
-                            },
-                            enabled = !File(
-                                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                                "${book.title}.pdf"
-                            ).isFile
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_baseline_download_24),
-                                contentDescription = null
-                            )
+                            }) {
+                                Text("Grant Storage Access")
+                            }
+                        } else {
+                            IconButton(onClick = {
+                                destination = book!!.title
+                            }) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_baseline_download_24),
+                                    contentDescription = null
+                                )
+                            }
                         }
                     }else{
-                        if (dbBook == null){
-                            viewModel.addBook(com.nima.openbooksdownloader.database.Book(
-                                id = id,
-                                title = book.title,
-                                note = "",
-                                tag = ""
-                            ))
-                        }
-
                         Button(onClick = {
                             val openPDF =
                                 Intent(Intent.ACTION_VIEW)
@@ -288,6 +266,7 @@ fun BookScreen (
                         }
                     }
                 }
+
                 IconButton(
                     onClick = {
                         // toggle saving book

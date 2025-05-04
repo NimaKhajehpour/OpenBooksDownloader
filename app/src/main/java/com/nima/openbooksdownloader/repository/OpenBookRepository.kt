@@ -1,5 +1,6 @@
 package com.nima.openbooksdownloader.repository
 
+import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import android.util.Log
@@ -8,6 +9,7 @@ import com.nima.openbooksdownloader.database.Book
 import com.nima.openbooksdownloader.database.BookDao
 import com.nima.openbooksdownloader.database.Tag
 import com.nima.openbooksdownloader.network.OpenBooksAPI
+import com.nima.openbooksdownloader.utils.BookDownloader
 import com.nima.openbooksdownloader.utils.DownloadState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -47,8 +49,10 @@ class OpenBookRepository
         }.flowOn(Dispatchers.IO).distinctUntilChanged()
     }
 
-    suspend fun downloadBook(url: String, destination: String) =
-        api.downloadBook(url).saveFile(destination)
+    suspend fun downloadBook(url: String, fileName: String, context: Context): Flow<DownloadState> {
+        val response = api.downloadBook(url)
+        return BookDownloader.downloadBook(response, context, fileName)
+    }
 
     suspend fun getRecentBooks() = api.getRecentBooks()
 

@@ -38,30 +38,23 @@ fun TagScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         items(items = tagBooks){
-            if (File(
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                    "${it.title}.pdf"
-                ).isFile){
-                BookmarkItem(book = it,
-                    onOpen = {
-                        val openPDF =
-                            Intent(Intent.ACTION_VIEW)
-                        openPDF.setDataAndType(
-                            FileProvider.getUriForFile(
-                                context, context.applicationContext.packageName + ".provider", File(
-                                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                                    "${it.title}.pdf"
-                                )
-                            ),
-                            "application/pdf"
-                        )
-                        openPDF.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-                        context.startActivity(Intent.createChooser(openPDF, "Open With..."))
-                    }
-                ) {
-                    // go to bookmarked book
-                    navController.navigate(Screens.SavedBookScreen.name + "/${it.id}")
+            BookmarkItem(book = it,
+                onOpen = {
+                    val openPDF =
+                        Intent(Intent.ACTION_VIEW)
+                    openPDF.setDataAndType(
+                        FileProvider.getUriForFile(context, context.applicationContext.packageName+".provider", File(
+                            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                            "${it.title}.pdf")
+                        ),
+                        "application/pdf"
+                    )
+                    openPDF.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    context.startActivity(Intent.createChooser(openPDF, "Open With..."))
                 }
+            ) {
+                // go to bookmarked book
+                navController.navigate(Screens.SavedBookScreen.name+"/${it.id}")
             }
         }
     }
