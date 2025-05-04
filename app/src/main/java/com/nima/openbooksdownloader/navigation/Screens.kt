@@ -9,5 +9,5 @@ enum class Screens {
     BookmarkScreen,
     SavedBookScreen,
     DownloadsScreen,
-    TagScreen
+    TagScreen,
 }

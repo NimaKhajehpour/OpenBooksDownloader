@@ -167,12 +167,20 @@ fun BookScreen (
                         text = "Title: ${Html.fromHtml(book.title)}",
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.tertiary
+                        color = MaterialTheme.colorScheme.tertiary,
+                        modifier = Modifier.padding(bottom = 8.dp)
                     )
                     Text(
                         text = Html.fromHtml(book.subtitle).toString(),
                         style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Normal
+                        fontWeight = FontWeight.Normal,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Text(
+                        text = Html.fromHtml(book.description).toString(),
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Normal,
+                        modifier = Modifier.padding(bottom = 8.dp)
                     )
                     Text(
                         text = "Authors: ${book.authors}",
@@ -315,6 +323,13 @@ fun BookScreen (
                     context.startActivity(intent)
                 }) {
                     Icon(painter = painterResource(id = R.drawable.ic_baseline_link_24),
+                        contentDescription = null)
+                }
+                IconButton(onClick = {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("${book.url}/pdf"))
+                    context.startActivity(intent)
+                }) {
+                    Icon(painter = painterResource(id = R.drawable.read),
                         contentDescription = null)
                 }
             }
