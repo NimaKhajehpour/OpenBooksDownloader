@@ -214,7 +214,6 @@ fun BookScreen (
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.Top,
                 horizontalArrangement = Arrangement.End,
-                itemVerticalAlignment = Alignment.Top,
                 maxLines = 2
             ){
 
