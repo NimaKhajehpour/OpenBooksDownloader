@@ -48,7 +48,7 @@ import java.io.File
 import java.net.URL
 import java.net.URLEncoder
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 @Composable
 fun BookScreen (
     navController: NavController,

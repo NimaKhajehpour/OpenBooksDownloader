@@ -31,7 +31,7 @@ import com.nima.openbooksdownloader.utils.Constants
 import com.nima.openbooksdownloader.viewmodel.SavedBookViewModel
 import java.io.File
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun SavedBookScreen (
     navController: NavController,
