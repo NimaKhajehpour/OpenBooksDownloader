@@ -9,12 +9,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nima.openbooksdownloader.components.SearchResultBookItem
@@ -31,6 +33,9 @@ fun SearchScreen(
     viewModel: SearchViewModel
 ) {
 
+    val scope = rememberCoroutineScope()
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     var searchQuery by rememberSaveable {
         mutableStateOf("")
     }
@@ -38,6 +43,8 @@ fun SearchScreen(
     var searchResult: SearchResult? by remember {
         mutableStateOf(null)
     }
+
+    var expandedSearchBar by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = searchQuery){
         if (searchQuery.isNotBlank()){
@@ -52,58 +59,61 @@ fun SearchScreen(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            shadowElevation = 10.dp,
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 5.dp, vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                IconButton(onClick = {
-                    navController.popBackStack()
-                }) {
-                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
-                }
-
-                TextField(value = searchQuery,
-                    onValueChange = {
+        SearchBar(
+            inputField = {
+                SearchBarDefaults.InputField(
+                    query = searchQuery,
+                    onQueryChange = {
                         searchQuery = it
                     },
-                    modifier = Modifier
-                        .padding(start = 8.dp, end = 8.dp)
-                        .fillMaxWidth(),
-                    shape = CircleShape,
-                    placeholder = {
-                        Text(text = "Search",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
+                    onSearch = {
+                        keyboardController!!.hide()
                     },
-                    textStyle = MaterialTheme.typography.bodyMedium,
-                    singleLine = true,
+                    expanded = expandedSearchBar,
+                    onExpandedChange = {
+                        expandedSearchBar = !expandedSearchBar
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = {
+                        Text("Search")
+                    },
                     colors = TextFieldDefaults.colors(
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
-                        focusedContainerColor = Color.Transparent
-                    )
+                        focusedContainerColor = Color.Transparent),
+                    trailingIcon = {
+                        IconButton(
+                            onClick = {
+                                searchQuery = ""
+                            }
+                        ) {
+                            Icon(imageVector = Icons.Default.Clear, null)
+                        }
+                    }
                 )
-            }
-        }
+            },
+            expanded = expandedSearchBar,
+            onExpandedChange = {
+                expandedSearchBar = !expandedSearchBar
+            },
+            shape = RoundedCornerShape(5.dp),
+            colors = SearchBarDefaults.colors(
+                containerColor = Color.Transparent,
+                dividerColor = MaterialTheme.colorScheme.tertiary
+            )
+        ) {
+            if (searchResult != null && searchResult?.status == "ok"){
 
-        if (searchResult != null && searchResult?.status == "ok"){
-
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                contentPadding = PaddingValues(vertical = 16.dp, horizontal = 13.dp)
-            ){
-                items(items = searchResult?.books.orEmpty()){
-                    SearchResultBookItem(book = it){ id ->
-                        navController.navigate(Screens.BookScreen.name+"/$id")
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    contentPadding = PaddingValues(vertical = 16.dp, horizontal = 13.dp)
+                ){
+                    items(items = searchResult?.books.orEmpty()){
+                        SearchResultBookItem(book = it){ id ->
+                            navController.navigate(Screens.BookScreen.name+"/$id")
+                        }
                     }
                 }
             }

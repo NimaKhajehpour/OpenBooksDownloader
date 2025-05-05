@@ -10,4 +10,6 @@ enum class Screens {
     SavedBookScreen,
     DownloadsScreen,
     TagScreen,
+    AboutScreen,
+    DonateScreen
 }

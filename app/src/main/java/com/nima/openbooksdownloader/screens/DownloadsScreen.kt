@@ -58,7 +58,7 @@ fun DownloadsScreen(
                     }
                 ) {
                     // go to bookmarked book
-                    navController.navigate(Screens.SavedBookScreen.name + "/${it.id}")
+                    navController.navigate(Screens.SavedBookScreen.name + "/${it.id}/${it.title}")
                 }
             }
         }

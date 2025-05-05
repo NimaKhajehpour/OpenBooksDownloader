@@ -76,9 +76,9 @@ fun BookmarkItem(
                     .fillMaxWidth()
                     .padding(top = 8.dp, bottom = 5.dp, start = 10.dp, end = 10.dp)
             )
-            Row(
+            FlowRow (
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
+                verticalArrangement = Arrangement.Center,
                 horizontalArrangement = Arrangement.Center
             ){
                 Button(

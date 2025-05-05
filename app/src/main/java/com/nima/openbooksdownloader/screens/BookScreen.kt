@@ -208,108 +208,129 @@ fun BookScreen (
                 }
             }
 
-            Row(
+            FlowRow (
                 modifier = Modifier
-                    .padding(horizontal = 32.dp, vertical = 8.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.Top,
+                horizontalArrangement = Arrangement.End,
+                itemVerticalAlignment = Alignment.Top,
+                maxLines = 2
             ){
 
                 if (downloading){
-                    LinearProgressIndicator(progress = downloadProgress / 100f)
-                    Text(text = "%$downloadProgress",
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.ExtraLight,
-                        modifier = Modifier.padding(start = 5.dp)
-                    )
-                }
-
-                if (!downloading) {
-                    if (!File(
-                            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                            "${book.title}.pdf"
-                        ).isFile){
-                        if (!StoragePermissionHelper.hasPermissions(context)) {
-                            Button(onClick = {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                                    StoragePermissionHelper.requestAllFilesAccess(context)
-                                } else {
-                                    permissionLauncher.launch(StoragePermissionHelper.permissionsForVersion())
-                                }
-                            }) {
-                                Text("Grant Storage Access")
-                            }
-                        } else {
-                            IconButton(onClick = {
-                                destination = book!!.title
-                            }) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_baseline_download_24),
-                                    contentDescription = null
-                                )
-                            }
-                        }
-                    }else{
-                        Button(onClick = {
-                            val openPDF =
-                                Intent(Intent.ACTION_VIEW)
-                            openPDF.setDataAndType(
-                                FileProvider.getUriForFile(context, context.applicationContext.packageName+".provider", File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                                    "${book.title}.pdf")),
-                                "application/pdf"
-                            )
-                            openPDF.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-                            context.startActivity(Intent.createChooser(openPDF, "Open With..."))
-                        }) {
-                            Text(text = "Start Reading")
-                        }
+                    Row{
+                        LinearProgressIndicator(progress = downloadProgress / 100f)
+                        Text(text = "%$downloadProgress",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.ExtraLight,
+                            modifier = Modifier.padding(start = 5.dp)
+                        )
                     }
                 }
-
-                IconButton(
-                    onClick = {
-                        // toggle saving book
-                              if (dbBook == null){
-                                  val bookToAdd = com.nima.openbooksdownloader.database.Book(
-                                      id = id.toLowerCase(),
-                                      title = book.title,
-                                      note = "",
-                                      tag = ""
-                                  )
-                                  viewModel.addBook(bookToAdd)
-                              }else{
-                                  viewModel.deleteBook(dbBook)
-                              }
-                    },
-                    enabled = !File(
-                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                        "${book.title}.pdf"
-                    ).isFile
-                ) {
-                    Icon(painter = painterResource(id =
-                        if (dbBook == null){
-                            R.drawable.ic_baseline_bookmark_border_24
-                        }else{
-                            R.drawable.ic_baseline_bookmark_24
+                Row{
+                    if (!downloading) {
+                        if (!File(
+                                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                                "${book.title}.pdf"
+                            ).isFile
+                        ) {
+                            if (!StoragePermissionHelper.hasPermissions(context)) {
+                                Button(onClick = {
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                        StoragePermissionHelper.requestAllFilesAccess(context)
+                                    } else {
+                                        permissionLauncher.launch(StoragePermissionHelper.permissionsForVersion())
+                                    }
+                                }) {
+                                    Text("Grant Storage Access")
+                                }
+                            } else {
+                                IconButton(onClick = {
+                                    destination = book!!.title
+                                }) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_baseline_download_24),
+                                        contentDescription = null
+                                    )
+                                }
+                            }
+                        } else {
+                            Button(onClick = {
+                                val openPDF =
+                                    Intent(Intent.ACTION_VIEW)
+                                openPDF.setDataAndType(
+                                    FileProvider.getUriForFile(
+                                        context,
+                                        context.applicationContext.packageName + ".provider",
+                                        File(
+                                            Environment.getExternalStoragePublicDirectory(
+                                                Environment.DIRECTORY_DOWNLOADS
+                                            ),
+                                            "${book.title}.pdf"
+                                        )
+                                    ),
+                                    "application/pdf"
+                                )
+                                openPDF.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                context.startActivity(Intent.createChooser(openPDF, "Open With..."))
+                            }) {
+                                Text(text = "Start Reading")
+                            }
                         }
-                    ),
-                        contentDescription = null)
-                }
+                    }
 
-                IconButton(onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(book.url))
-                    context.startActivity(intent)
-                }) {
-                    Icon(painter = painterResource(id = R.drawable.ic_baseline_link_24),
-                        contentDescription = null)
-                }
-                IconButton(onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("${book.url}/pdf"))
-                    context.startActivity(intent)
-                }) {
-                    Icon(painter = painterResource(id = R.drawable.read),
-                        contentDescription = null)
+                    IconButton(
+                        onClick = {
+                            // toggle saving book
+                            if (dbBook == null) {
+                                val bookToAdd = com.nima.openbooksdownloader.database.Book(
+                                    id = id.toLowerCase(),
+                                    title = book.title,
+                                    note = "",
+                                    tag = ""
+                                )
+                                viewModel.addBook(bookToAdd)
+                            } else {
+                                viewModel.deleteBook(dbBook)
+                            }
+                        },
+                        enabled = !File(
+                            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                            "${book.title}.pdf"
+                        ).isFile
+                    ) {
+                        Icon(
+                            painter = painterResource(
+                                id =
+                                if (dbBook == null) {
+                                    R.drawable.ic_baseline_bookmark_border_24
+                                } else {
+                                    R.drawable.ic_baseline_bookmark_24
+                                }
+                            ),
+                            contentDescription = null
+                        )
+                    }
+
+                    IconButton(onClick = {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(book.url))
+                        context.startActivity(intent)
+                    }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_baseline_link_24),
+                            contentDescription = null
+                        )
+                    }
+                    IconButton(onClick = {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("${book.url}/pdf"))
+                        context.startActivity(intent)
+                    }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.read),
+                            contentDescription = null
+                        )
+                    }
                 }
             }
 

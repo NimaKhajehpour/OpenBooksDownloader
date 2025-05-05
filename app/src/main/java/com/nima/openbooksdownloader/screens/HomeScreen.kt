@@ -41,26 +41,16 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun HomeScreen(
     navController: NavController,
     viewModel: HomeViewModel
 ) {
 
-    val tags = viewModel.getAllTags().collectAsState(initial = emptyList()).value
 
     val recentBooks = produceState<RecentBooks?>(initialValue = null){
         value = viewModel.getRecentBooks()
     }.value
-
-    var showTagDialog by remember {
-        mutableStateOf(false)
-    }
-
-    var tagName by remember {
-        mutableStateOf("")
-    }
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
@@ -72,301 +62,33 @@ fun HomeScreen(
         }
     }
 
-    val context = LocalContext.current
 
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            ModalDrawerSheet {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.Top,
-                    horizontalAlignment = Alignment.Start
-                ){
-                    Spacer(modifier = Modifier.height(12.dp))
+    Column (
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ){
 
-                    NavigationDrawerItem(
-                        label = {
-                            Text(text = "Close")
-                        },
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = null
-                            )
-                        },
-                        selected = false,
-                        onClick = {
-                            scope.launch {
-                                drawerState.close()
-                            }
-                        },
-                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
-                        colors = NavigationDrawerItemDefaults.colors(
-                            unselectedIconColor = MaterialTheme.colorScheme.tertiary
-                        ),
-                    )
-
-                    NavigationDrawerItem(
-                        label = {
-                            Text(text = "Downloads")
-                        },
-                        icon = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_baseline_download_24),
-                                contentDescription = null
-                            )
-                        },
-                        selected = false,
-                        onClick = {
-                            // go to downloads
-                            scope.launch {
-                                drawerState.close()
-                            }
-                            navController.navigate(Screens.DownloadsScreen.name)
-                        },
-                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
-                        colors = NavigationDrawerItemDefaults.colors(
-                            unselectedIconColor = MaterialTheme.colorScheme.tertiary
-                        ),
-                    )
-                    NavigationDrawerItem(
-                        label = {
-                            Text(text = "Bookmarks")
-                        },
-                        icon = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_baseline_bookmark_border_24),
-                                contentDescription = null
-                            )
-                        },
-                        selected = false,
-                        onClick = {
-                            // go to bookmark
-                            scope.launch {
-                                drawerState.close()
-                            }
-                            navController.navigate(Screens.BookmarkScreen.name)
-                        },
-                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
-                        colors = NavigationDrawerItemDefaults.colors(
-                            unselectedIconColor = MaterialTheme.colorScheme.tertiary
-                        ),
-                        )
-                    NavigationDrawerItem(
-                        label = {
-                            Text(text = "Search")
-                        },
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = null
-                            )
-                        },
-                        selected = false,
-                        onClick = {
-                            // go to search
-                            navController.navigate(Screens.SearchScreen.name)
-                            scope.launch {
-                                drawerState.close()
-                            }
-                        },
-                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
-                        colors = NavigationDrawerItemDefaults.colors(
-                            unselectedIconColor = MaterialTheme.colorScheme.tertiary
-                        ),
-                    )
-                    NavigationDrawerItem(
-                        label = {
-                            Text(text = "Powered By: dbooks.org")
-                        },
-                        badge = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_baseline_link_24),
-                                contentDescription = null
-                            )
-                        },
-                        selected = false,
-                        onClick = {
-                            // go to Link
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.dbooks.org/"))
-                            context.startActivity(intent)
-                            scope.launch {
-                                drawerState.close()
-                            }
-                        },
-                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
-                        colors = NavigationDrawerItemDefaults.colors(
-                            unselectedBadgeColor = MaterialTheme.colorScheme.tertiary
-                        ),
-                    )
-                    Divider(modifier = Modifier.padding(16.dp),
-                        color = MaterialTheme.colorScheme.tertiary
-                    )
-
-                    NavigationDrawerItem(label = {
-                        Text(text = "Tags")
-                    }, selected = false,
-                        onClick = {
-                            // go to tags
-                            scope.launch {
-                                drawerState.close()
-                            }
-                            navController.navigate(Screens.TagsScreen.name)
-                        },
-                        badge = {
-                            IconButton(onClick = {
-                                // add tags
-                                scope.launch {
-                                    drawerState.close()
-                                }
-                                showTagDialog = true
-                            },
-                            ) {
-                                Icon(imageVector = Icons.Default.Add, contentDescription = null)
-                            }
-                        },
-                        colors = NavigationDrawerItemDefaults.colors(
-                            unselectedBadgeColor = MaterialTheme.colorScheme.tertiary
-                        ),
-                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-                    )
-
-                    if (tags.isNotEmpty()){
-                        tags.forEach {
-                            NavigationDrawerItem(label = {
-                                Text(text = it.name)
-                            }, selected = false,
-                                onClick = {
-                                    // go to tag name
-                                    scope.launch {
-                                        drawerState.close()
-                                    }
-                                    navController.navigate(Screens.TagScreen.name+"/${it.name}")
-                                },
-                                modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
-                                colors = NavigationDrawerItemDefaults.colors(
-                                    unselectedTextColor = MaterialTheme.colorScheme.onTertiaryContainer
-                                )
-                            )
-                        }
-                    }
-                }
+        when (recentBooks) {
+            null -> {
+                CircularProgressIndicator(modifier = Modifier
+                    .padding(top = 32.dp)
+                    .size(32.dp))
             }
-        },
-        content = {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize(),
-            ){
-
-                if (showTagDialog){
-                    AlertDialog(
-                        onDismissRequest = {
-                            showTagDialog = false
-                            tagName = ""
-                        },
-                        confirmButton = {
-                            TextButton(
-                                onClick = {
-                                    val tag = Tag(tagName.trim())
-                                    viewModel.addTag(tag)
-                                    tagName = ""
-                                    showTagDialog = false
-                                },
-                                enabled = tagName.isNotBlank() && tagName.trim().length <= 20,
-                                colors = ButtonDefaults.textButtonColors(
-                                    contentColor = MaterialTheme.colorScheme.tertiary
-                                )
-                            ) {
-                                Text(text = "Add Tag")
-                            }
-                        },
-                        dismissButton = {
-                            TextButton(
-                                onClick = {
-                                    showTagDialog = false
-                                    tagName = ""
-                                },
-                            ) {
-                                Text(text = "Cancel")
-                            }
-                        },
-                        title = {
-                            Text(text = "Add Tag")
-                        },
-                        text = {
-                            OutlinedTextField(value = tagName,
-                                onValueChange = {
-                                    tagName = it
-                                },
-                                singleLine = true,
-                                isError = tagName.trim().length > 20,
-                                supportingText = {
-                                    Text(text = "Tag can be up to 20 characters in length")
-                                }
-                            )
-                        },
-                    )
-                }
-
-                when (recentBooks) {
-                    null -> {
-                        CircularProgressIndicator(modifier = Modifier
-                            .padding(top = 32.dp)
-                            .size(32.dp)
-                            .align(Alignment.TopCenter))
-                    }
-                    else -> {
-                        LazyColumn(
-                            contentPadding = PaddingValues(vertical = 13.dp),
-                            verticalArrangement = Arrangement.Top,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            items(items = recentBooks.books) {
-                                RecentBooksItem(book = it){ id ->
-                                    navController.navigate(Screens.BookScreen.name+"/$id")
-                                }
-                            }
-                        }
-                    }
-                }
-                SmallFloatingActionButton(onClick = {
-                    scope.launch {
-                        drawerState.open()
-                    }
-                },
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(bottom = 16.dp, end = 8.dp),
-                    shape = RoundedCornerShape(
-                        topEndPercent =
-                            animateIntAsState(targetValue = if (drawerState.isOpen) 50 else 10).value,
-                        topStartPercent =
-                        animateIntAsState(targetValue = if (drawerState.isOpen) 50 else 10).value,
-                        bottomEndPercent =
-                        animateIntAsState(targetValue = if (drawerState.isOpen) 50 else 10).value,
-                        bottomStartPercent =
-                        animateIntAsState(targetValue = if (drawerState.isOpen) 50 else 10).value
-                    )
+            else -> {
+                LazyColumn(
+                    contentPadding = PaddingValues(vertical = 13.dp),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    AnimatedContent(targetState = drawerState){
-                        if (drawerState.isOpen){
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = null
-                            )
-                        }else{
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = null
-                            )
+                    items(items = recentBooks.books) {
+                        RecentBooksItem(book = it){ id ->
+                            navController.navigate(Screens.BookScreen.name+"/$id")
                         }
                     }
                 }
             }
         }
-    )
+    }
 }

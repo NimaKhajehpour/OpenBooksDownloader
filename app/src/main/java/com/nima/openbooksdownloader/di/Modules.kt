@@ -11,6 +11,7 @@ import com.nima.openbooksdownloader.viewmodel.BookViewModel
 import com.nima.openbooksdownloader.viewmodel.BookmarkViewModel
 import com.nima.openbooksdownloader.viewmodel.DownloadsViewModel
 import com.nima.openbooksdownloader.viewmodel.HomeViewModel
+import com.nima.openbooksdownloader.viewmodel.MainViewModel
 import com.nima.openbooksdownloader.viewmodel.SavedBookViewModel
 import com.nima.openbooksdownloader.viewmodel.SearchViewModel
 import com.nima.openbooksdownloader.viewmodel.TagViewModel
@@ -70,5 +71,8 @@ val module = module {
     }
     viewModel {
         TagViewModel(get())
+    }
+    viewModel {
+        MainViewModel(get())
     }
 }

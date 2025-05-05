@@ -1,4 +1,5 @@
 [versions]
+datastore = "1.1.1"
 coroutine-core = "1.6.4"
 lifecyle = "2.8.7"
 navigation = "2.8.9"
@@ -39,3 +40,5 @@ ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest", v
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "ext-junit" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
+# Datastore
+datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }

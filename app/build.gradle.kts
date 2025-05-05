@@ -58,6 +58,9 @@ android {
 
 dependencies {
 
+    //DataStore
+    implementation(libs.datastore)
+
     //Coroutines
     implementation (libs.coroutine.core)
     implementation (libs.coroutine.android)
