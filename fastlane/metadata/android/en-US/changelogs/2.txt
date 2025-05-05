@@ -1,0 +1,7 @@
+* added about and donation page
+* fixed storage handling bug when downloading books
+* UI tweaks and improvements
+* fixed not showing books by tags bug
+* added button to read books online
+* fixed nav drawer accessibility
+* added light theme and full sensor orientation
